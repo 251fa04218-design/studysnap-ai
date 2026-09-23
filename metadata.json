@@ -1,0 +1,6 @@
+{
+  "name": "SnapStudy AI",
+  "description": "On-device AI study assistant optimized for Snapdragon HP PCs. Locally analyzes lecture notes, PDFs, and recorded audio to generate summaries, quizzes, and instant offline Q&A with zero cloud uploads.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
