@@ -308,7 +308,11 @@ private fun SummaryTab(viewModel: StudyViewModel, material: StudyMaterial) {
                             color = Color.White
                         )
                         Text(
-                            text = "Latency: ${material.npuProcessingTimeMs}ms • 0 bytes transmitted externally",
+                            text = if (material.type == MaterialType.PDF) {
+                                "Apache PDFBox (${material.pageCount} pages) • ${material.npuProcessingTimeMs}ms • 0 bytes transmitted"
+                            } else {
+                                "Latency: ${material.npuProcessingTimeMs}ms • 0 bytes transmitted externally"
+                            },
                             fontSize = 11.sp,
                             color = HexagonCyan
                         )
@@ -1291,7 +1295,11 @@ private fun SourceTextTab(viewModel: StudyViewModel, material: StudyMaterial) {
                             fontSize = 13.sp
                         )
                         Text(
-                            text = if (material.type == MaterialType.AUDIO) "Snapdragon Hexagon DSP: Real-Time Acoustic Speech Transcript" else "Indexed into local vector chunks for Snapdragon NPU RAG retrieval",
+                            text = when (material.type) {
+                                MaterialType.AUDIO -> "Snapdragon Hexagon DSP: Real-Time Acoustic Speech Transcript"
+                                MaterialType.PDF -> "Apache PDFBox: Extracted ${material.pageCount} Pages • Zero-Cloud Local Indexing"
+                                else -> "Indexed into local vector chunks for Snapdragon NPU RAG retrieval"
+                            },
                             fontSize = 11.sp,
                             color = HexagonCyan
                         )

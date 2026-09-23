@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -67,12 +68,21 @@ fun ImportDialog(
     var noteTitle by remember { mutableStateOf("") }
     var noteSubject by remember { mutableStateOf("") }
     var noteContent by remember { mutableStateOf("") }
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     val documentPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         if (uri != null) {
-            val fileName = uri.lastPathSegment ?: "Course_Material_${System.currentTimeMillis()}.pdf"
+            val fileName = try {
+                context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (cursor.moveToFirst() && nameIndex >= 0) cursor.getString(nameIndex) else null
+                }
+            } catch (e: Exception) {
+                null
+            } ?: uri.lastPathSegment ?: "Course_Material_${System.currentTimeMillis()}.pdf"
+
             onImportPdf(uri, fileName, "Imported Material")
             onDismiss()
         }

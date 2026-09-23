@@ -18,6 +18,7 @@ import com.example.model.QuizAttempt
 import com.example.model.QuizQuestion
 import com.example.model.StudyMaterial
 import com.example.pdf.DocumentProcessor
+import com.example.pdf.PdfParser
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +42,7 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
         repository = StudyRepository(database.studyDao())
         audioRecorder = LectureAudioRecorder(application)
         audioPlayer = LectureAudioPlayer(application)
+        PdfParser.initialize(application)
 
         viewModelScope.launch {
             repository.checkAndSeedInitialData()
@@ -169,7 +171,7 @@ class StudyViewModel(application: Application) : AndroidViewModel(application) {
     fun importDocument(uri: Uri, fileName: String, subject: String, onComplete: (Long) -> Unit) {
         viewModelScope.launch {
             _isAiProcessing.value = true
-            _processingMessage.value = "Hexagon NPU: Extracting text & generating local study synthesis..."
+            _processingMessage.value = "Apache PDFBox: Extracting pages & running local Hexagon NPU analysis..."
             try {
                 val extracted = DocumentProcessor.extractFromUri(getApplication(), uri, fileName)
                 val newId = repository.ingestStudyMaterial(
